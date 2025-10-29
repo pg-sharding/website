@@ -1,430 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SPQR - Stateless Postgres Query Router</title>
-    <meta name="description" content="SPQR is a production-ready system for horizontal scaling of PostgreSQL via sharding. True open source under PostgreSQL license.">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-            line-height: 1.6;
-            color: #1a1a1a;
-            background: #ffffff;
-        }
-
-        a {
-            color: #5382ff;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Header */
-        header {
-            padding: 20px 0;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            height: 50px;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 30px;
-            list-style: none;
-        }
-
-        .nav-links a {
-            color: #4b5563;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover {
-            color: #5382ff;
-        }
-
-        /* Hero Section */
-        .hero {
-            padding: 80px 0 100px;
-            text-align: center;
-        }
-
-        .hero h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            margin-bottom: 24px;
-            line-height: 1.1;
-            color: #111827;
-        }
-
-        .hero .tagline {
-            font-size: 1.5rem;
-            color: #6b7280;
-            margin-bottom: 40px;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .cta-buttons {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 14px 32px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border-radius: 8px;
-            text-decoration: none;
-            transition: all 0.3s;
-            display: inline-block;
-        }
-
-        .btn-primary {
-            background: #5382ff;
-            color: white;
-            border: 2px solid #5382ff;
-        }
-
-        .btn-primary:hover {
-            background: #3d6aed;
-            border-color: #3d6aed;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(83, 130, 255, 0.2);
-        }
-
-        .btn-secondary {
-            background: white;
-            color: #5382ff;
-            border: 2px solid #5382ff;
-        }
-
-        .btn-secondary:hover {
-            background: #e2ebff;
-            transform: translateY(-2px);
-        }
-
-        /* Features Section */
-        .features {
-            padding: 80px 0;
-            background: #f9fafb;
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 60px;
-            color: #111827;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 40px;
-        }
-
-        .feature-card {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s;
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-        }
-
-        .feature-icon {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-        }
-
-        .feature-card h3 {
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-            color: #111827;
-        }
-
-        .feature-card p {
-            color: #6b7280;
-            line-height: 1.7;
-        }
-
-        /* Why SPQR Section */
-        .why-spqr {
-            padding: 80px 0;
-        }
-
-        .why-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 60px;
-            align-items: center;
-        }
-
-        .why-text h2 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 30px;
-            color: #111827;
-        }
-
-        .why-text p {
-            font-size: 1.1rem;
-            color: #4b5563;
-            margin-bottom: 20px;
-            line-height: 1.8;
-        }
-
-        .highlight-box {
-            background: #e2ebff;
-            border-left: 4px solid #5382ff;
-            padding: 25px;
-            margin-top: 30px;
-            border-radius: 8px;
-        }
-
-        .highlight-box strong {
-            color: #5382ff;
-            font-size: 1.2rem;
-        }
-
-        /* Stats Section */
-        .stats {
-            padding: 60px 0;
-            background: #1e293b;
-            color: white;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 40px;
-            text-align: center;
-        }
-
-        .stat-item h3 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-            color: #5382ff;
-        }
-
-        .stat-item p {
-            color: #cbd5e1;
-            font-size: 1.1rem;
-        }
-
-        /* CTA Section */
-        .cta-section {
-            padding: 80px 0;
-            text-align: center;
-            background: linear-gradient(135deg, #5382ff 0%, #3d6aed 100%);
-            color: white;
-        }
-
-        .cta-section h2 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-        }
-
-        .cta-section p {
-            font-size: 1.3rem;
-            margin-bottom: 40px;
-            opacity: 0.95;
-        }
-
-        .cta-section .btn {
-            background: white;
-            color: #5382ff;
-        }
-
-        .cta-section .btn:hover {
-            background: #e2ebff;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
-        }
-
-        /* Footer */
-        footer {
-            padding: 40px 0;
-            background: #111827;
-            color: #9ca3af;
-            text-align: center;
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .footer-links a {
-            color: #9ca3af;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .footer-links a:hover {
-            color: white;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-
-            .hero .tagline {
-                font-size: 1.2rem;
-            }
-
-            .why-content {
-                grid-template-columns: 1fr;
-            }
-
-            .nav-links {
-                display: none;
-            }
-
-            .features-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 6px 12px;
-            background: #dcfce7;
-            color: #166534;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-
-        /* Use Cases Section */
-        .use-cases {
-            padding: 80px 0;
-            background: white;
-        }
-
-        .use-cases-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
-        }
-
-        .use-case-card {
-            padding: 30px;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            transition: all 0.3s;
-        }
-
-        .use-case-card:hover {
-            border-color: #5382ff;
-            transform: translateY(-3px);
-            box-shadow: 0 5px 20px rgba(83, 130, 255, 0.1);
-        }
-
-        .use-case-card h3 {
-            font-size: 1.3rem;
-            margin-bottom: 15px;
-            color: #111827;
-        }
-
-        .use-case-card p {
-            color: #6b7280;
-            line-height: 1.7;
-            font-size: 1rem;
-        }
-
-        /* FAQ Section */
-        .faq {
-            padding: 80px 0;
-            background: #f9fafb;
-        }
-
-        .faq-list {
-            max-width: 800px;
-            margin: 0 auto;
-            margin-top: 40px;
-        }
-
-        .faq-item {
-            background: white;
-            padding: 30px;
-            margin-bottom: 20px;
-            border-radius: 12px;
-            border-left: 4px solid #5382ff;
-        }
-
-        .faq-item h3 {
-            font-size: 1.2rem;
-            color: #111827;
-            margin-bottom: 12px;
-            font-weight: 600;
-        }
-
-        .faq-item p {
-            color: #4b5563;
-            line-height: 1.7;
-        }
-
-        .faq-item ul {
-            margin-top: 10px;
-            margin-left: 20px;
-            color: #4b5563;
-            line-height: 1.7;
-        }
-
-        .faq-item code {
-            background: #f3f4f6;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9em;
-            color: #5382ff;
-        }
-    </style>
+    <meta name="description"
+        content="SPQR is a production-ready system for horizontal scaling of PostgreSQL via sharding. True open source under PostgreSQL license.">
+    <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <header>
         <div class="container">
             <div class="header-content">
-                <img src="docs/logo/png/spqr_logo_alpha.png" alt="SPQR Logo" class="logo">
+                <img src="https://raw.githubusercontent.com/pg-sharding/spqr/refs/heads/master/docs/logo/spqr_icon-main.svg"
+                    alt="SPQR Logo" class="logo">
                 <nav>
                     <ul class="nav-links">
+                        <li><a href="https://pg-sharding.tech/welcome/faq">FAQ</a></li>
                         <li><a href="https://pg-sharding.tech">Documentation</a></li>
                         <li><a href="https://github.com/pg-sharding/spqr">GitHub</a></li>
                         <li><a href="https://t.me/+jMGhyjwicpI3ZWQy">Community</a></li>
@@ -436,85 +30,15 @@
 
     <section class="hero">
         <div class="container">
-            <span class="badge">TRUE OPEN SOURCE - PostgreSQL License</span>
+            <span class="badge">TRUE OPEN SOURCE - POSTGRESQL LICENSE</span>
             <h1>Scale PostgreSQL Without Compromise</h1>
             <p class="tagline">
-                Production-ready PostgreSQL sharding solution. Simplicity, performance, and true open source.
+                Production-ready PostgreSQL sharding solution.<br />Simplicity, performance, and true open source.
             </p>
             <div class="cta-buttons">
-                <a href="https://pg-sharding.tech/welcome/get_started" class="btn btn-primary">Get Started in 5 Minutes</a>
+                <a href="https://pg-sharding.tech/welcome/get_started" class="btn btn-primary">Get Started in 5
+                    Minutes</a>
                 <a href="https://github.com/pg-sharding/spqr" class="btn btn-secondary">⭐ Star on GitHub</a>
-            </div>
-        </div>
-    </section>
-
-    <section class="features">
-        <div class="container">
-            <h2 class="section-title">Why SPQR</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <h3>True Open Source</h3>
-                    <p>
-                        Licensed under PostgreSQL Global Development Group License—not AGPL. 
-                        Use it freely in production, modify it, keep your changes private. No strings attached.
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <h3>Production Ready</h3>
-                    <p>
-                        Battle-tested by Yandex Cloud's Data Platform team. Handle terabytes of data and 100K+ queries per second with confidence.
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <h3>OLTP Optimized</h3>
-                    <p>
-                        While competitors focus on analytics, SPQR excels at transactional workloads—the backbone of real applications.
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <h3>Smooth Migration</h3>
-                    <p>
-                        Painless monolith → sharded transitions. No massive rewrites. Start small, scale when ready.
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <h3>Pure PostgreSQL</h3>
-                    <p>
-                        Not a fork. Not an extension. A stateless router that keeps PostgreSQL pure and your tooling intact.
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <h3>Go-Powered Speed</h3>
-                    <p>
-                        Written in Go for exceptional performance and easy deployment. Simple, fast, reliable.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="why-spqr">
-        <div class="container">
-            <div class="why-content">
-                <div class="why-text">
-                    <h2>When to Use SPQR</h2>
-                    <p>
-                        PostgreSQL is the world's most advanced open source database, but scaling a single instance beyond terabytes and 100K+ QPS is challenging.
-                    </p>
-                    <p>
-                        Other solutions like Vitess (Apache 2.0) and Citus (AGPL 3.0) work, but they come with trade-offs: vendor lock-in, complex migrations, or restrictive licenses.
-                    </p>
-                    <p>
-                        <strong>SPQR is different.</strong> Built by engineers who understand real-world OLTP workloads, it provides horizontal scaling without forcing you into a corner.
-                    </p>
-                    <div class="highlight-box">
-                        <strong>The PostgreSQL License means freedom.</strong><br>
-                        Use SPQR in your SaaS, modify the source, keep changes private. Unlike AGPL competitors, SPQR respects your business model.
-                    </div>
-                </div>
-                <div class="why-image">
-                    <img src="https://raw.githubusercontent.com/pg-sharding/spqr/master/docs/logo/png/spqr_logo_alpha.png" alt="SPQR Architecture" style="width: 100%; max-width: 400px;">
-                </div>
             </div>
         </div>
     </section>
@@ -542,98 +66,105 @@
         </div>
     </section>
 
-    <section class="use-cases">
+    <section class="features">
         <div class="container">
-            <h2 class="section-title">Applications That Love SPQR</h2>
-            <div class="use-cases-grid">
-                <div class="use-case-card">
-                    <h3>Multi-Tenant SaaS</h3>
+            <h2 class="section-title">Why SPQR</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>True Open Source</h3>
                     <p>
-                        Shard by tenant_id to isolate customer data. Each tenant's data lives on dedicated shards, 
-                        ensuring security and performance as you scale to thousands of customers.
+                        Licensed under PostgreSQL Global Development Group License—not AGPL.
+                        Use it freely in production, modify it, keep your changes private. No strings attached.
                     </p>
                 </div>
-                <div class="use-case-card">
-                    <h3>High-Traffic OLTP</h3>
+                <div class="feature-card">
+                    <h3>Production Ready</h3>
                     <p>
-                        E-commerce, fintech, and gaming applications with millions of transactions per day. 
-                        SPQR handles short, frequent queries with minimal latency overhead.
+                        Battle-tested by Yandex Cloud's Data Platform team. Handle terabytes of data and 100K+ queries
+                        per second with confidence.
                     </p>
                 </div>
-                <div class="use-case-card">
-                    <h3>IoT & Time-Series</h3>
+                <div class="feature-card">
+                    <h3>OLTP Optimized</h3>
                     <p>
-                        Distribute sensor data, logs, or metrics by device_id or timestamp ranges. 
-                        Scale horizontally as your device fleet grows.
+                        While competitors focus on analytics, SPQR excels at transactional workloads—the backbone of
+                        real applications.
                     </p>
                 </div>
-                <div class="use-case-card">
-                    <h3>Microservices Storage</h3>
+                <div class="feature-card">
+                    <h3>Smooth Migration</h3>
                     <p>
-                        Each microservice can have its own logical shard while sharing infrastructure. 
-                        Simplify data architecture without managing multiple databases.
+                        Painless monolith → sharded transitions. No massive rewrites. Start small, scale when ready.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <h3>Managed Service Compatible</h3>
+                    <p>
+                        Use any existing managed PostgreSQL service for your shards. SPQR integrates seamlessly with AWS
+                        RDS, Google Cloud SQL, Azure Database, and more—focus on your app, not database ops.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <h3>PostgreSQL Everywhere</h3>
+                    <p>
+                        Leverage PostgreSQL's full power across all shards. SPQR integrates seamlessly, reducing
+                        infrastructure complexity and letting you focus on your data, not your stack.
                     </p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="faq">
+    <section class="why-spqr">
         <div class="container">
-            <h2 class="section-title">Frequently Asked Questions</h2>
-            <div class="faq-list">
-                <div class="faq-item">
-                    <h3>When should I use SPQR?</h3>
+            <h2 class="section-title">When to Use SPQR</h2>
+            <div class="highlight-box" style="max-width: 600px; margin: 0 auto 60px;">
+                <strong>The PostgreSQL License means freedom.</strong><br>
+                Use SPQR in your SaaS, modify the source, keep changes private. Unlike AGPL competitors, SPQR
+                respects your business model.
+            </div>
+            <div class="use-cases-grid">
+                <div class="use-case-card">
+                    <h3>E-Commerce Platforms</h3>
                     <p>
-                        SPQR is ideal when:
-                    </p>
-                    <ul>
-                        <li>Your data exceeds several terabytes and doesn't fit on a single PostgreSQL instance</li>
-                        <li>Most queries operate within a single shard (not requiring cross-shard joins)</li>
-                        <li>You need 100K+ queries per second with consistent latency</li>
-                        <li>You want to automate resharding and load balancing</li>
-                    </ul>
-                </div>
-                
-                <div class="faq-item">
-                    <h3>How is SPQR different from Citus or Vitess?</h3>
-                    <p>
-                        SPQR is a stateless router focused on OLTP workloads with true open source licensing (PostgreSQL License, not AGPL). 
-                        It automatically determines shards from query text without manual hints, supports multiple router instances for high availability, 
-                        and includes built-in tools for resharding and data migration.
+                        Shard by customer_id or product_category to handle massive catalogs and orders. Ensure fast
+                        lookups for user carts, orders, and recommendations across global user bases.
                     </p>
                 </div>
-                
-                <div class="faq-item">
-                    <h3>Can I use SPQR with managed PostgreSQL services?</h3>
+                <div class="use-case-card">
+                    <h3>Content Management Systems</h3>
                     <p>
-                        Yes! SPQR works with any PostgreSQL-compatible database, including managed services like 
-                        Yandex Managed PostgreSQL, AWS RDS, Google Cloud SQL, and Azure Database for PostgreSQL.
+                        Distribute content by author_id or content_type for blogs, CMS, or media platforms. Scale
+                        read/write operations while keeping related data (comments, metadata) on the same shard.
                     </p>
                 </div>
-                
-                <div class="faq-item">
-                    <h3>What about cross-shard queries and transactions?</h3>
+                <div class="use-case-card">
+                    <h3>Microservices Storage</h3>
                     <p>
-                        SPQR supports cross-shard reads with the <code>/*__spqr__allow_multishard: true*/</code> hint. 
-                        For atomic cross-shard writes, use two-phase commit (2PC) by setting <code>__spqr__commit_strategy</code> to <code>'2pc'</code>. 
-                        However, SPQR is optimized for single-shard transactions.
+                        Each microservice can have its own logical shard while sharing infrastructure.
+                        Simplify data architecture without managing multiple databases.
                     </p>
                 </div>
-                
-                <div class="faq-item">
-                    <h3>How does performance compare to vanilla PostgreSQL?</h3>
+                <div class="use-case-card">
+                    <h3>User-Centric Applications</h3>
                     <p>
-                        In TPC-C benchmarks, SPQR shows approximately 50% overhead compared to a single PostgreSQL instance. 
-                        However, by distributing load across multiple shards, total throughput scales linearly with the number of shards.
+                        Shard by user_id to keep all user data and operations on a single shard. Perfect for services
+                        like email or social platforms where each user's mailbox, messages, and interactions are
+                        isolated and scalable.
                     </p>
                 </div>
-                
-                <div class="faq-item">
-                    <h3>Can I migrate an existing database to SPQR?</h3>
+                <div class="use-case-card">
+                    <h3>IoT & Time-Series</h3>
                     <p>
-                        Yes! Start by connecting your current cluster as the first shard, define your sharding key, 
-                        then use SPQR's built-in tools to gradually migrate and reshard data. The process can be done with minimal downtime.
+                        Distribute sensor data, logs, or metrics by device_id or timestamp ranges.
+                        Scale horizontally as your device fleet grows.
+                    </p>
+                </div>
+                <div class="use-case-card">
+                    <h3>High-Traffic OLTP</h3>
+                    <p>
+                        E-commerce, fintech, and gaming applications with millions of transactions per day.
+                        SPQR handles short, frequent queries with minimal latency overhead.
                     </p>
                 </div>
             </div>
@@ -646,7 +177,8 @@
             <p>Join the community and start sharding in minutes</p>
             <div class="cta-buttons">
                 <a href="https://pg-sharding.tech/welcome/get_started" class="btn">Read Documentation</a>
-                <a href="https://t.me/+jMGhyjwicpI3ZWQy" class="btn" style="background: transparent; border: 2px solid white; color: white;">Join Telegram</a>
+                <a href="https://t.me/+jMGhyjwicpI3ZWQy" class="btn"
+                    style="background: transparent; border: 2px solid white; color: white;">Join Telegram</a>
             </div>
         </div>
     </section>
@@ -664,5 +196,5 @@
         </div>
     </footer>
 </body>
-</html>
 
+</html>
