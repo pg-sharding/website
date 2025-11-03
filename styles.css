@@ -206,6 +206,88 @@ header {
     font-size: 1.2rem;
 }
 
+/* Problem-Solution Section */
+.problem-solution {
+    padding: 100px 0;
+    background: #ffffff;
+}
+
+.content-left {
+    max-width: 900px;
+}
+
+.section-label {
+    display: block;
+    text-align: left;
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #5382ff;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+}
+
+.large-headline {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1.2;
+    text-align: left;
+    color: #111827;
+    max-width: 900px;
+    margin: 0 0 32px 0;
+}
+
+.large-headline .highlight {
+    background: linear-gradient(135deg, #c7d2fe 0%, #ddd6fe 100%);
+    padding: 0 8px;
+    border-radius: 4px;
+}
+
+.section-description {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: #6b7280;
+    text-align: left;
+    max-width: 800px;
+    margin: 0 0 80px 0;
+}
+
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+    gap: 40px;
+    max-width: 1140px;
+}
+
+.benefit-card {
+    text-align: left;
+}
+
+.benefit-icon {
+    width: 48px;
+    height: 48px;
+    background: #eef2ff;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+.benefit-card h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 12px;
+}
+
+.benefit-card p {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #6b7280;
+}
+
 /* Stats Section */
 .stats {
     padding: 60px 0;
@@ -230,6 +312,68 @@ header {
 .stat-item p {
     color: #cbd5e1;
     font-size: 1.1rem;
+}
+
+/* Docker Section */
+.docker-section {
+    padding: 100px 0;
+    background: #ffffff;
+    text-align: center;
+}
+
+.docker-command-box {
+    max-width: 700px;
+    margin: 0 auto 20px;
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.docker-command-box code {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 1.125rem;
+    color: #e2e8f0;
+    flex: 1;
+    text-align: left;
+}
+
+.copy-btn {
+    background: #334155;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.copy-btn:hover {
+    background: #475569;
+    color: #ffffff;
+}
+
+.docker-description {
+    margin-top: 20px;
+}
+
+.link-arrow {
+    color: #5382ff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.125rem;
+    transition: all 0.2s;
+}
+
+.link-arrow:hover {
+    color: #3d6aed;
 }
 
 /* CTA Section */

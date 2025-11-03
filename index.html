@@ -19,8 +19,8 @@
                     alt="SPQR Logo" class="logo">
                 <nav>
                     <ul class="nav-links">
-                        <li><a href="https://pg-sharding.tech/welcome/faq">FAQ</a></li>
-                        <li><a href="https://pg-sharding.tech">Documentation</a></li>
+                        <li><a href="https://docs.pg-sharding.tech/welcome/faq">FAQ</a></li>
+                        <li><a href="https://docs.pg-sharding.tech">Documentation</a></li>
                         <li><a href="https://github.com/pg-sharding/spqr">GitHub</a></li>
                         <li><a href="https://t.me/+jMGhyjwicpI3ZWQy">Community</a></li>
                     </ul>
@@ -37,9 +37,101 @@
                 Production-ready PostgreSQL sharding solution.<br />Simplicity, performance, and true open source.
             </p>
             <div class="cta-buttons">
-                <a href="https://pg-sharding.tech/welcome/get_started" class="btn btn-primary">Get Started in 5
+                <a href="https://docs.pg-sharding.tech/welcome/get_started" class="btn btn-primary">Get Started in 5
                     Minutes</a>
                 <a href="https://github.com/pg-sharding/spqr" class="btn btn-secondary">⭐ Star on GitHub</a>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="docker-section">
+        <div class="container">
+            <div class="docker-command-box">
+                <code>docker pull pgsharding/spqr-router:latest</code>
+                <button class="copy-btn"
+                    onclick="navigator.clipboard.writeText('docker pull pgsharding/spqr-router:latest')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </button>
+            </div>
+            <p class="docker-description">
+                <a href="https://docs.pg-sharding.tech/welcome/get_started" class="link-arrow">Read the quickstart guide
+                    →</a>
+            </p>
+        </div>
+    </section>
+
+    <section class="problem-solution">
+        <div class="container">
+            <div class="content-left">
+                <span class="section-label">PostgreSQL is awesome</span>
+                <h2 class="large-headline">
+                    Love <span class="highlight">PostgreSQL</span> too?<br />
+                    You don't need to abandon it<br />
+                    to scale horizontally
+                </h2>
+                <p class="section-description">
+                    PostgreSQL is awesome, but it's hard to manage a single database
+                    with some terabytes of data and 10<sup>5</sup>+ queries per second.
+                    Existing sharding solutions focus on analytical and hybrid workloads (OLAP, HTAP).
+                    Moreover, most of those solutions do not provide a simple,
+                    painless path for the monolith ↔ sharded transitions.<br />
+                    That's why the <a href="https://yandex.cloud/en/services#data-platform" target="_blank">Data
+                        Platform team of Yandex.Cloud</a> designed SPQR.
+                </p>
+            </div>
+
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <div class="benefit-icon">🔓</div>
+                    <h3>True Open Source</h3>
+                    <p>
+                        Licensed under PostgreSQL Global Development Group License—not AGPL. Use it freely in
+                        production, modify it, keep your changes private. No strings attached.
+                    </p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">⚡</div>
+                    <h3>Production Ready</h3>
+                    <p>
+                        Battle-tested by Yandex Cloud's Data Platform team. Handle terabytes of data and 100K+ queries
+                        per second with confidence.
+                    </p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">🎯</div>
+                    <h3>OLTP Optimized</h3>
+                    <p>
+                        While competitors focus on analytics, SPQR excels at transactional workloads—the backbone of
+                        real applications.
+                    </p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">🔄</div>
+                    <h3>Smooth Migration</h3>
+                    <p>
+                        Painless monolith → sharded transitions. No massive rewrites. Start small, scale when ready.
+                    </p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">☁️</div>
+                    <h3>Managed Service Compatible</h3>
+                    <p>
+                        Use any existing managed PostgreSQL service for your shards. SPQR integrates seamlessly with AWS
+                        RDS, Google Cloud SQL, Azure Database, and more—focus on your app, not database ops.
+                    </p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">🐘</div>
+                    <h3>PostgreSQL Everywhere</h3>
+                    <p>
+                        Leverage PostgreSQL's full power across all shards. SPQR integrates seamlessly, reducing
+                        infrastructure complexity and letting you focus on your data, not your stack.
+                    </p>
+                </div>
             </div>
         </div>
     </section>
@@ -62,55 +154,6 @@
                 <div class="stat-item">
                     <h3>Open Source</h3>
                     <p>PostgreSQL License</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="features">
-        <div class="container">
-            <h2 class="section-title">Why SPQR</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <h3>True Open Source</h3>
-                    <p>
-                        Licensed under PostgreSQL Global Development Group License—not AGPL.
-                        Use it freely in production, modify it, keep your changes private. No strings attached.
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <h3>Production Ready</h3>
-                    <p>
-                        Battle-tested by Yandex Cloud's Data Platform team. Handle terabytes of data and 100K+ queries
-                        per second with confidence.
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <h3>OLTP Optimized</h3>
-                    <p>
-                        While competitors focus on analytics, SPQR excels at transactional workloads—the backbone of
-                        real applications.
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <h3>Smooth Migration</h3>
-                    <p>
-                        Painless monolith → sharded transitions. No massive rewrites. Start small, scale when ready.
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <h3>Managed Service Compatible</h3>
-                    <p>
-                        Use any existing managed PostgreSQL service for your shards. SPQR integrates seamlessly with AWS
-                        RDS, Google Cloud SQL, Azure Database, and more—focus on your app, not database ops.
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <h3>PostgreSQL Everywhere</h3>
-                    <p>
-                        Leverage PostgreSQL's full power across all shards. SPQR integrates seamlessly, reducing
-                        infrastructure complexity and letting you focus on your data, not your stack.
-                    </p>
                 </div>
             </div>
         </div>
@@ -177,7 +220,7 @@
             <h2>Ready to Scale PostgreSQL?</h2>
             <p>Join the community and start sharding in minutes</p>
             <div class="cta-buttons">
-                <a href="https://pg-sharding.tech/welcome/get_started" class="btn">Read Documentation</a>
+                <a href="https://docs.pg-sharding.tech/welcome/get_started" class="btn">Read Documentation</a>
                 <a href="https://t.me/+jMGhyjwicpI3ZWQy" class="btn"
                     style="background: transparent; border: 2px solid white; color: white;">Join Telegram</a>
             </div>
@@ -188,7 +231,7 @@
         <div class="container">
             <div class="footer-links">
                 <a href="https://github.com/pg-sharding/spqr">GitHub</a>
-                <a href="https://pg-sharding.tech">Documentation</a>
+                <a href="https://docs.pg-sharding.tech">Documentation</a>
                 <a href="https://t.me/+jMGhyjwicpI3ZWQy">Community</a>
                 <a href="https://github.com/pg-sharding/spqr/issues">Issues</a>
                 <a href="https://github.com/pg-sharding/spqr/blob/master/LICENSE">License</a>
