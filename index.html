@@ -23,14 +23,33 @@
                         alt="SPQR Logo" class="logo">
                     <span>SPQR</span>
                 </a>
-                <nav>
-                    <ul class="nav-links">
-                        <li><a href="https://docs.pg-sharding.tech/welcome/faq">FAQ</a></li>
-                        <li><a href="https://docs.pg-sharding.tech">Documentation</a></li>
-                        <li><a href="https://github.com/pg-sharding/spqr">GitHub</a></li>
-                        <li><a href="https://t.me/+jMGhyjwicpI3ZWQy">Community</a></li>
-                    </ul>
-                </nav>
+                <div class="header-right">
+                    <nav>
+                        <ul class="nav-links">
+                            <li><a href="https://docs.pg-sharding.tech/welcome/faq">FAQ</a></li>
+                            <li><a href="https://docs.pg-sharding.tech">Documentation</a></li>
+                            <li><a href="https://t.me/+jMGhyjwicpI3ZWQy">Community</a></li>
+                        </ul>
+                    </nav>
+                    <a href="https://github.com/pg-sharding/spqr" class="github-nav-link" title="pg-sharding/spqr">
+                        <span class="github-repo">
+                            <svg class="github-mark" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                                <path
+                                    d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82A7.42 7.42 0 0 1 8.02 3.86c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z">
+                                </path>
+                            </svg>
+                            <span>pg-sharding/spqr</span>
+                        </span>
+                        <span class="github-star-meta" aria-label="GitHub stars">
+                            <svg class="github-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <path
+                                    d="m12 3.5 2.6 5.27 5.82.85-4.21 4.1.99 5.8L12 16.79l-5.2 2.73.99-5.8-4.21-4.1 5.82-.85L12 3.5Z">
+                                </path>
+                            </svg>
+                            <span class="github-stars" data-github-stars>...</span>
+                        </span>
+                    </a>
+                </div>
             </div>
         </div>
     </header>
@@ -45,10 +64,7 @@
             <div class="cta-buttons">
                 <a href="https://docs.pg-sharding.tech/welcome/get_started" class="btn btn-primary">Get Started in 5
                     Minutes</a>
-                <a href="https://github.com/pg-sharding/spqr" class="btn btn-secondary github-star-btn">
-                    <span>⭐ Star on GitHub</span>
-                    <span class="github-stars" id="github-stars" aria-label="GitHub stars">...</span>
-                </a>
+                <a href="https://github.com/pg-sharding/spqr" class="btn btn-secondary">View on GitHub</a>
             </div>
         </div>
     </section>
@@ -248,9 +264,9 @@
         </div>
     </footer>
     <script>
-        const starsElement = document.getElementById('github-stars');
+        const starElements = document.querySelectorAll('[data-github-stars]');
 
-        if (starsElement) {
+        if (starElements.length > 0) {
             fetch('https://api.github.com/repos/pg-sharding/spqr')
                 .then((response) => {
                     if (!response.ok) {
@@ -259,10 +275,16 @@
                     return response.json();
                 })
                 .then((repo) => {
-                    starsElement.textContent = repo.stargazers_count.toLocaleString('en-US');
+                    const formattedStars = repo.stargazers_count.toLocaleString('en-US');
+
+                    starElements.forEach((element) => {
+                        element.textContent = formattedStars;
+                    });
                 })
                 .catch(() => {
-                    starsElement.hidden = true;
+                    starElements.forEach((element) => {
+                        element.hidden = true;
+                    });
                 });
         }
     </script>

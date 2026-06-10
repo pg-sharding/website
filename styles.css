@@ -57,6 +57,12 @@ header {
     gap: 28px;
 }
 
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 .brand {
     display: inline-flex;
     align-items: center;
@@ -90,6 +96,75 @@ header {
 .nav-links a:hover {
     color: var(--primary-dark);
     background: var(--primary-soft);
+}
+
+.github-nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    height: 32px;
+    color: #727377;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    border-radius: 6px;
+    transition: color 0.2s;
+}
+
+.github-nav-link:hover {
+    color: var(--primary-dark);
+}
+
+.github-repo,
+.github-star-meta {
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+}
+
+.github-repo {
+    gap: 8px;
+    color: #374151;
+    font-weight: 500;
+}
+
+.github-nav-link:hover .github-repo {
+    color: var(--primary-dark);
+}
+
+.github-star-meta {
+    gap: 6px;
+    flex-shrink: 0;
+    color: inherit;
+}
+
+.github-mark,
+.github-star-icon {
+    display: block;
+    flex-shrink: 0;
+}
+
+.github-mark {
+    fill: currentColor;
+}
+
+.github-star-icon {
+    fill: none;
+    stroke: currentColor;
+    stroke-linejoin: round;
+    stroke-width: 1.8;
+}
+
+.github-mark {
+    width: 16px;
+    height: 16px;
+}
+
+.github-star-icon {
+    width: 14px;
+    height: 14px;
 }
 
 /* Hero Section */
@@ -161,23 +236,12 @@ header {
     transform: translateY(-1px);
 }
 
-.github-star-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-}
-
 .github-stars {
-    display: inline-flex;
-    align-items: center;
-    min-width: 48px;
-    padding: 3px 8px;
-    border-radius: 999px;
-    background: var(--primary-soft);
-    color: var(--primary-dark);
-    font-size: 0.9rem;
-    font-weight: 700;
-    justify-content: center;
+    color: inherit;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    font-variant-numeric: tabular-nums;
 }
 
 /* Features Section */
