@@ -118,6 +118,25 @@ header {
     transform: translateY(-2px);
 }
 
+.github-star-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.github-stars {
+    display: inline-flex;
+    align-items: center;
+    min-width: 48px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #e2ebff;
+    color: #3d6aed;
+    font-size: 0.9rem;
+    font-weight: 700;
+    justify-content: center;
+}
+
 /* Features Section */
 .features {
     padding: 80px 0;

@@ -42,7 +42,10 @@
             <div class="cta-buttons">
                 <a href="https://docs.pg-sharding.tech/welcome/get_started" class="btn btn-primary">Get Started in 5
                     Minutes</a>
-                <a href="https://github.com/pg-sharding/spqr" class="btn btn-secondary">⭐ Star on GitHub</a>
+                <a href="https://github.com/pg-sharding/spqr" class="btn btn-secondary github-star-btn">
+                    <span>⭐ Star on GitHub</span>
+                    <span class="github-stars" id="github-stars" aria-label="GitHub stars">...</span>
+                </a>
             </div>
         </div>
     </section>
@@ -242,6 +245,25 @@
             <p>&copy; 2025 SPQR. Licensed under PostgreSQL Global Development Group License.</p>
         </div>
     </footer>
+    <script>
+        const starsElement = document.getElementById('github-stars');
+
+        if (starsElement) {
+            fetch('https://api.github.com/repos/pg-sharding/spqr')
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('GitHub API request failed');
+                    }
+                    return response.json();
+                })
+                .then((repo) => {
+                    starsElement.textContent = repo.stargazers_count.toLocaleString('en-US');
+                })
+                .catch(() => {
+                    starsElement.hidden = true;
+                });
+        }
+    </script>
 </body>
 
 </html>
