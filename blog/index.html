@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - SPQR</title>
+    <meta name="description" content="Articles about SPQR, PostgreSQL sharding, routing, and architecture.">
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+    <link rel="alternate icon" href="/favicon.ico" type="image/x-icon">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="brand" aria-label="SPQR home">
+                    <img src="https://raw.githubusercontent.com/pg-sharding/spqr/refs/heads/master/docs/logo/spqr_icon-main.svg"
+                        alt="SPQR Logo" class="logo">
+                    <span>SPQR</span>
+                </a>
+                <div class="header-right">
+                    <nav>
+                        <ul class="nav-links">
+                            <li><a href="https://docs.pg-sharding.tech/welcome/faq">FAQ</a></li>
+                            <li><a href="https://docs.pg-sharding.tech">Documentation</a></li>
+                            <li><a href="/blog/">Blog</a></li>
+                            <li><a href="https://t.me/+jMGhyjwicpI3ZWQy">Community</a></li>
+                        </ul>
+                    </nav>
+                    <a href="https://github.com/pg-sharding/spqr" class="github-nav-link" title="pg-sharding/spqr">
+                        <span class="github-repo">
+                            <svg class="github-mark" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                                <path
+                                    d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82A7.42 7.42 0 0 1 8.02 3.86c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z">
+                                </path>
+                            </svg>
+                            <span>pg-sharding/spqr</span>
+                        </span>
+                        <span class="github-star-meta" aria-label="GitHub stars">
+                            <svg class="github-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <path
+                                    d="m12 3.5 2.6 5.27 5.82.85-4.21 4.1.99 5.8L12 16.79l-5.2 2.73.99-5.8-4.21-4.1 5.82-.85L12 3.5Z">
+                                </path>
+                            </svg>
+                            <span class="github-stars" data-github-stars>...</span>
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="blog-hero">
+            <div class="container blog-container">
+                <span class="badge">SPQR BLOG</span>
+                <h1>PostgreSQL Sharding Notes</h1>
+                <p>
+                    Practical articles about SPQR architecture, routing, operations, and PostgreSQL sharding.
+                </p>
+            </div>
+        </section>
+
+        <section class="blog-list-section">
+            <div class="container blog-container">
+                <article class="blog-card">
+                    <div class="blog-card-meta">Architecture · 4 min read</div>
+                    <h2><a href="/blog/spqr-architecture/">SPQR Architecture in 4 Minutes: Router, Coordinator, Shards</a></h2>
+                    <p>
+                        A short mental model for SPQR: how routers, coordinator, QDB, and PostgreSQL shards fit
+                        together.
+                    </p>
+                    <a href="/blog/spqr-architecture/" class="blog-card-link">Read article</a>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="https://github.com/pg-sharding/spqr">GitHub</a>
+                <a href="https://docs.pg-sharding.tech">Documentation</a>
+                <a href="/blog/">Blog</a>
+                <a href="https://t.me/+jMGhyjwicpI3ZWQy">Community</a>
+                <a href="https://github.com/pg-sharding/spqr/issues">Issues</a>
+                <a href="https://github.com/pg-sharding/spqr/blob/master/LICENSE">License</a>
+            </div>
+            <p>&copy; 2025 SPQR. Licensed under PostgreSQL Global Development Group License.</p>
+        </div>
+    </footer>
+    <script src="/site.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPQR Architecture in 4 Minutes - SPQR Blog</title>
+    <meta name="description"
+        content="A short explanation of SPQR architecture: router, coordinator, QDB, and PostgreSQL shards.">
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+    <link rel="alternate icon" href="/favicon.ico" type="image/x-icon">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="brand" aria-label="SPQR home">
+                    <img src="https://raw.githubusercontent.com/pg-sharding/spqr/refs/heads/master/docs/logo/spqr_icon-main.svg"
+                        alt="SPQR Logo" class="logo">
+                    <span>SPQR</span>
+                </a>
+                <div class="header-right">
+                    <nav>
+                        <ul class="nav-links">
+                            <li><a href="https://docs.pg-sharding.tech/welcome/faq">FAQ</a></li>
+                            <li><a href="https://docs.pg-sharding.tech">Documentation</a></li>
+                            <li><a href="/blog/">Blog</a></li>
+                            <li><a href="https://t.me/+jMGhyjwicpI3ZWQy">Community</a></li>
+                        </ul>
+                    </nav>
+                    <a href="https://github.com/pg-sharding/spqr" class="github-nav-link" title="pg-sharding/spqr">
+                        <span class="github-repo">
+                            <svg class="github-mark" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                                <path
+                                    d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82A7.42 7.42 0 0 1 8.02 3.86c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z">
+                                </path>
+                            </svg>
+                            <span>pg-sharding/spqr</span>
+                        </span>
+                        <span class="github-star-meta" aria-label="GitHub stars">
+                            <svg class="github-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <path
+                                    d="m12 3.5 2.6 5.27 5.82.85-4.21 4.1.99 5.8L12 16.79l-5.2 2.73.99-5.8-4.21-4.1 5.82-.85L12 3.5Z">
+                                </path>
+                            </svg>
+                            <span class="github-stars" data-github-stars>...</span>
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <article class="article-page">
+            <div class="container article-container">
+                <a href="/blog/" class="article-back-link">Back to blog</a>
+                <div class="article-meta">Architecture · 4 min read</div>
+                <h1>SPQR Architecture in 4 Minutes: Router, Coordinator, Shards</h1>
+
+                <p class="article-lead">
+                    SPQR is a proxy-based sharding layer for PostgreSQL. Applications keep using the PostgreSQL
+                    protocol, while SPQR decides which shard should receive each transaction.
+                </p>
+
+                <section class="article-tldr" aria-labelledby="tldr-heading">
+                    <h2 id="tldr-heading">TL;DR</h2>
+
+                    <p>
+                        Think about SPQR as three layers:
+                    </p>
+
+                    <ul>
+                        <li><strong>Routers</strong> accept PostgreSQL client connections and route transactions.</li>
+                        <li><strong>Coordinator and QDB</strong> manage and distribute sharding metadata.</li>
+                        <li><strong>PostgreSQL shards</strong> store the actual application data.</li>
+                    </ul>
+
+                    <p>
+                        This keeps topology logic out of application code, lets routers scale horizontally, and keeps
+                        PostgreSQL as the system of record on every shard.
+                    </p>
+                </section>
+
+                <p>
+                    The current design did not appear immediately. Earlier experiments used PostgreSQL extension
+                    mechanisms such as FDW and planner-level integration. Those approaches were natural, but they came
+                    with too much overhead at high shard counts, high QPS, or major PostgreSQL upgrade time. SPQR took a
+                    different path: keep PostgreSQL unchanged and put a lightweight router between applications and
+                    shards.
+                </p>
+
+                <h2>Router Instead of Custom Drivers</h2>
+
+                <p>
+                    The router is the central idea. Applications connect to it over the regular PostgreSQL wire
+                    protocol. From the client side, the connection still looks PostgreSQL-like: no custom database
+                    driver, no application-side shard map, no new API.
+                </p>
+
+                <figure class="article-figure">
+                    <img src="https://habrastorage.org/r/w1560/getpro/habr/upload_files/9c9/cc3/37e/9c9cc337e1f453ea28c02a2a0824ade4.png"
+                        alt="Application connects to an SPQR router, which routes traffic to PostgreSQL shards">
+                    <figcaption>Applications talk to SPQR routers. Routers route transactions to PostgreSQL shards.</figcaption>
+                </figure>
+
+                <p>
+                    The router inspects the beginning of a transaction and chooses the shard that should execute the
+                    whole transaction. This is important: SPQR is optimized for OLTP workloads where a transaction can
+                    usually be routed by a stable shard key such as <code>user_id</code>, <code>tenant_id</code>, or a
+                    composite key.
+                </p>
+
+                <p>
+                    If the key is present in the query, the router can derive the target shard automatically. If the key
+                    is not obvious from SQL, an application can pass it explicitly with an SPQR hint:
+                </p>
+
+                <pre><code>INSERT INTO orders(id, data) VALUES (10, '...')
+/*__spqr__sharding_key: 1, 100*/;</code></pre>
+
+                <p>
+                    For queries that cannot be mapped to a specific shard, the behavior is configurable. A deployment can
+                    route them to a default shard, reject them, or require a more explicit routing decision depending on
+                    how strict the workload needs to be.
+                </p>
+
+                <h2>Many Routers, One Metadata View</h2>
+
+                <p>
+                    A single router would become both a bottleneck and a single point of failure. SPQR avoids that by
+                    allowing many routers to run in parallel. Routers are stateless with respect to application data:
+                    they do not store user rows and can be added or removed as traffic changes.
+                </p>
+
+                <figure class="article-figure">
+                    <img src="https://habrastorage.org/r/w1560/getpro/habr/upload_files/cd5/d2d/b8d/cd5d2db8dee495c4c2d705067a06ac7c.png"
+                        alt="Several SPQR routers running in parallel in front of PostgreSQL shards">
+                    <figcaption>Multiple routers can serve application traffic at the same time.</figcaption>
+                </figure>
+
+                <p>
+                    The challenge is metadata. Every router needs to know the same sharding rules: which distributions
+                    exist, which key ranges belong to which shard, and where the actual PostgreSQL endpoints are.
+                    Managing that independently on every router would quickly become unsafe.
+                </p>
+
+                <h2>Coordinator and QDB</h2>
+
+                <p>
+                    SPQR separates the data path from the control plane. Routers handle application traffic. The
+                    coordinator manages cluster metadata and writes it into QDB, a small metadata store backed by etcd in
+                    typical deployments.
+                </p>
+
+                <figure class="article-figure">
+                    <img src="https://habrastorage.org/r/w1560/getpro/habr/upload_files/45b/f22/7b3/45bf227b370c5eb73d809e6ddf1187e6.png"
+                        alt="SPQR coordinator stores metadata in QDB and distributes rules to routers">
+                    <figcaption>Coordinator and QDB keep routers aligned on the current sharding metadata.</figcaption>
+                </figure>
+
+                <p>
+                    This split lets operators add routers dynamically without copying configuration by hand. A router can
+                    keep sharding rules in memory for fast decisions, while the authoritative view remains in QDB and is
+                    coordinated through the control plane.
+                </p>
+
+                <h2>What Happens to PostgreSQL Shards</h2>
+
+                <p>
+                    Shards remain ordinary PostgreSQL clusters. SPQR does not replace PostgreSQL storage and does not ask
+                    teams to adopt a new database engine. Each shard can use the operational patterns teams already know:
+                    managed PostgreSQL, Patroni, Stolon, or another high availability setup.
+                </p>
+
+                <p>
+                    That is the practical trade-off. SPQR does not try to make every possible distributed SQL query look
+                    like it runs on a single PostgreSQL instance. Instead, it focuses on a common production shape:
+                    high-throughput OLTP traffic that can be routed to one shard by a key.
+                </p>
+
+                <p>
+                    At this point, the natural question is how to get from one PostgreSQL cluster to 4, 8, 16, 32, 128
+                    shards and beyond without turning operations into a manual migration project. That is where data
+                    movement, balancing, and shard management come in. We will cover those parts in the next articles.
+                    Stay tuned, don't hesitate to <a href="https://github.com/pg-sharding/spqr">star us on GitHub</a>,
+                    and peace.
+                </p>
+            </div>
+        </article>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="https://github.com/pg-sharding/spqr">GitHub</a>
+                <a href="https://docs.pg-sharding.tech">Documentation</a>
+                <a href="/blog/">Blog</a>
+                <a href="https://t.me/+jMGhyjwicpI3ZWQy">Community</a>
+                <a href="https://github.com/pg-sharding/spqr/issues">Issues</a>
+                <a href="https://github.com/pg-sharding/spqr/blob/master/LICENSE">License</a>
+            </div>
+            <p>&copy; 2025 SPQR. Licensed under PostgreSQL Global Development Group License.</p>
+        </div>
+    </footer>
+    <script src="/site.js"></script>
+</body>
+
+</html>
