@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Single-Shard OLTP First - SPQR Blog</title>
+    <meta name="description"
+        content="Why SPQR optimizes for single-shard OLTP queries, how that keeps routing fast, and what it means for shard-key design.">
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+    <link rel="alternate icon" href="/favicon.ico" type="image/x-icon">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="brand" aria-label="SPQR home">
+                    <img src="https://raw.githubusercontent.com/pg-sharding/spqr/refs/heads/master/docs/logo/spqr_icon-main.svg"
+                        alt="SPQR Logo" class="logo">
+                    <span>SPQR</span>
+                </a>
+                <div class="header-right">
+                    <nav>
+                        <ul class="nav-links">
+                            <li><a href="https://docs.pg-sharding.tech/welcome/faq">FAQ</a></li>
+                            <li><a href="https://docs.pg-sharding.tech">Documentation</a></li>
+                            <li><a href="/blog/">Blog</a></li>
+                            <li><a href="https://t.me/+jMGhyjwicpI3ZWQy">Community</a></li>
+                        </ul>
+                    </nav>
+                    <a href="https://github.com/pg-sharding/spqr" class="github-nav-link" title="pg-sharding/spqr">
+                        <span class="github-repo">
+                            <svg class="github-mark" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                                <path
+                                    d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82A7.42 7.42 0 0 1 8.02 3.86c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z">
+                                </path>
+                            </svg>
+                            <span>pg-sharding/spqr</span>
+                        </span>
+                        <span class="github-star-meta" aria-label="GitHub stars">
+                            <svg class="github-star-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <path
+                                    d="m12 3.5 2.6 5.27 5.82.85-4.21 4.1.99 5.8L12 16.79l-5.2 2.73.99-5.8-4.21-4.1 5.82-.85L12 3.5Z">
+                                </path>
+                            </svg>
+                            <span class="github-stars" data-github-stars>...</span>
+                        </span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <article class="article-page">
+            <div class="container article-container">
+                <a href="/blog/" class="article-back-link">Back to blog</a>
+                <div class="article-meta">Design · 4 min read</div>
+                <h1>Single-Shard OLTP First: The Most Important Design Choice in SPQR</h1>
+
+                <p class="article-lead">
+                    The most important thing about SPQR is not that it supports sharding, but the kind of sharding it
+                    optimizes for. SPQR is designed around single-shard OLTP queries. That sounds narrow, but it is a
+                    strong engineering choice.
+                </p>
+
+                <section class="article-tldr" aria-labelledby="tldr-heading">
+                    <h2 id="tldr-heading">TL;DR</h2>
+
+                    <ul>
+                        <li>SPQR optimizes the common OLTP path: one query goes to one shard.</li>
+                        <li>Keeping work on one shard avoids distributed coordination and makes horizontal scaling
+                            practical.</li>
+                        <li>The trade-off is deliberate data modeling: a good shard key keeps latency-sensitive
+                            operations local.</li>
+                        <li>Cross-shard queries and transactions remain available, but they are exceptions rather than
+                            the default workload shape.</li>
+                    </ul>
+                </section>
+
+                <h2>Why Single-Shard OLTP</h2>
+
+                <p>
+                    OLTP systems usually execute many small queries:
+                </p>
+
+                <ul>
+                    <li>fetch one account</li>
+                    <li>insert one order</li>
+                    <li>update one user's settings</li>
+                    <li>read one tenant's configuration</li>
+                    <li>append one device event</li>
+                </ul>
+
+                <p>
+                    These operations are latency-sensitive and frequent. If each of these queries can be routed to
+                    exactly one shard, horizontal scaling becomes much more practical.
+                </p>
+
+                <ul>
+                    <li>Each shard handles a subset of traffic.</li>
+                    <li>Routers make routing decisions.</li>
+                    <li>PostgreSQL remains the storage engine.</li>
+                    <li>Capacity grows by adding shards.</li>
+                </ul>
+
+                <p>
+                    The original idea behind this design is straightforward: take PostgreSQL and run it on multiple
+                    machines so they work as a single system. For that to actually scale, each instance must handle its
+                    own portion of the workload independently. If every query touches every shard, adding more machines
+                    does not help—it just adds coordination overhead. That is why single-shard queries are the
+                    foundation. They are the operations that truly benefit from horizontal scaling.
+                </p>
+
+                <p>
+                    This does not mean cross-shard queries should be avoided entirely. They exist, and they are useful.
+                    But overusing them undermines the very reason for sharding in the first place. If most of your
+                    traffic requires coordination across shards, you are paying the cost of a distributed system without
+                    getting the scalability benefit.
+                </p>
+
+                <h2>The Cost of Cross-Shard</h2>
+
+                <p>
+                    The alternative is to optimize for arbitrary cross-shard SQL. That is a much harder problem because
+                    cross-shard queries require coordination. Cross-shard snapshots require consistency machinery.
+                    Cross-shard joins require data movement or distributed execution. Cross-shard transactions require
+                    commit protocols and recovery behavior. All of that adds complexity, latency, and failure modes.
+                </p>
+
+                <p>
+                    PostgreSQL itself provides building blocks in this direction: <a
+                        href="https://www.postgresql.org/docs/current/postgres-fdw.html"><code>postgres_fdw</code></a>
+                    can push work to remote PostgreSQL servers and scan multiple foreign partitions asynchronously.
+                    These features are useful, but they do not make distributed coordination free.
+                </p>
+
+                <h2>How the Routing Path Works</h2>
+
+                <p>
+                    SPQR chooses a different center of gravity: keep the common transactional path fast and explicit.
+                </p>
+
+                <p>
+                    This is visible in the architecture (see <a href="/blog/spqr-architecture/">SPQR Architecture in 4
+                        Minutes</a> for a full overview): the router is a lightweight layer that speaks PostgreSQL
+                    protocol, receives client queries, and routes them to shards. The coordinator manages metadata.
+                    Shards are normal PostgreSQL clusters.
+                </p>
+
+                <p>
+                    For a single-shard query, the ideal path is simple:
+                </p>
+
+                <figure class="article-figure">
+                    <img src="/blog/single-shard-oltp-first/single-shard-routing.png"
+                        alt="A client sends one query through an SPQR router to one PostgreSQL shard, and the result returns along the same path">
+                    <figcaption>One query goes to one shard and returns without fan-out or result merging.</figcaption>
+                </figure>
+
+                <p>
+                    Consider a multi-tenant application sharded by <code>tenant_id</code>. A typical query looks like
+                    this:
+                </p>
+
+                <pre><code>SELECT order_id, total, status
+FROM orders
+WHERE tenant_id = 42 AND created_at &gt; now() - interval '7 days';</code></pre>
+
+                <p>
+                    The router parses this query, extracts <code>tenant_id = 42</code> from the <code>WHERE</code> clause,
+                    looks up which shard holds tenant 42, and forwards the query directly to that single PostgreSQL
+                    instance. No coordination, no fan-out, no merging of partial results. The shard executes it as a
+                    normal local query and returns the rows.
+                </p>
+
+                <p>
+                    Compare that with a query that lacks a shard key:
+                </p>
+
+                <pre><code>SELECT count(*) FROM orders WHERE status = 'pending';</code></pre>
+
+                <p>
+                    This query has no <code>tenant_id</code> filter, so the router cannot determine which shard to use. It
+                    must scatter the query to all shards and combine the results. That still works, but it is slower and
+                    more expensive—exactly the kind of operation SPQR treats as an exception rather than the norm.
+                </p>
+
+                <h2>Choosing a Shard Key</h2>
+
+                <p>
+                    The cost of this simplicity is that the data model matters. A useful shard key keeps hot paths local,
+                    distributes traffic evenly, and appears in most latency-sensitive queries.
+                </p>
+
+                <p>
+                    A good shard key is an application design decision. If most queries are scoped by
+                    <code>tenant_id</code>, then <code>tenant_id</code> may be a good key. If user data is naturally
+                    independent, <code>user_id</code> may work. If events belong to devices, <code>device_id</code> can be
+                    reasonable.
+                </p>
+
+                <p>
+                    This is why SPQR's single-shard OLTP focus is useful: it forces the right conversation early. Which
+                    operations are local? Which data should be colocated? Which queries are truly global? Which reports
+                    belong in another pipeline?
+                </p>
+
+                <h2>Cross-Shard Is Still Possible</h2>
+
+                <p>
+                    But this design choice does not mean that SPQR cannot support cross-shard operations. There are
+                    situations where you need them:
+                </p>
+
+                <ul>
+                    <li>Scatter queries can be useful for administration.</li>
+                    <li>Bulk operations matter for loading data.</li>
+                    <li>Distributed transactions exist as a tool, with the usual performance and recovery concerns.</li>
+                </ul>
+
+                <p>
+                    But these should be treated as special cases, not the default shape of the system.
+                </p>
+
+                <p>
+                    The goal is not to build a distributed database that mimics every behavior of a single PostgreSQL
+                    server. The goal is to keep PostgreSQL useful beyond the limits of one primary node. Single-shard
+                    OLTP first is the choice that makes that goal practical.
+                </p>
+
+                <p>
+                    The single-shard path solves the steady state. The next challenge is keeping that path fast while
+                    data and traffic change. In the next article, we'll look at data movement and balancing: how SPQR
+                    redistributes key ranges without turning growth into an outage.
+                </p>
+            </div>
+        </article>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="https://github.com/pg-sharding/spqr">GitHub</a>
+                <a href="https://docs.pg-sharding.tech">Documentation</a>
+                <a href="/blog/">Blog</a>
+                <a href="https://t.me/+jMGhyjwicpI3ZWQy">Community</a>
+                <a href="https://github.com/pg-sharding/spqr/issues">Issues</a>
+                <a href="https://github.com/pg-sharding/spqr/blob/master/LICENSE">License</a>
+            </div>
+            <p>&copy; 2025 SPQR. Licensed under PostgreSQL Global Development Group License.</p>
+        </div>
+    </footer>
+    <script src="/site.js"></script>
+</body>
+
+</html>

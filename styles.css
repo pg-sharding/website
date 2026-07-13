@@ -566,6 +566,11 @@ header {
     padding: 24px 0 96px;
 }
 
+.blog-list-section .blog-container {
+    display: grid;
+    gap: 24px;
+}
+
 .blog-card {
     padding: 28px;
     background: var(--bg);
