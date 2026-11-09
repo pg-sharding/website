@@ -1,0 +1,51 @@
+name: Sync install.sh from SPQR
+
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+  repository_dispatch:
+    types: [spqr-install-script-updated]
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: sync-install-script
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download install.sh from pg-sharding/spqr master
+        run: |
+          curl -fsSL -o install.sh.new \
+            https://raw.githubusercontent.com/pg-sharding/spqr/master/install.sh
+          sh -n install.sh.new
+          head -n 1 install.sh.new | grep -q '^#!/bin/sh'
+          mv install.sh.new install.sh
+
+      - name: Commit and push if changed
+        id: commit
+        run: |
+          if git diff --quiet -- install.sh; then
+            echo "install.sh is up to date"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add install.sh
+          git commit -m "Sync install.sh from pg-sharding/spqr@master"
+          git push
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Request GitHub Pages rebuild
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${GITHUB_REPOSITORY}/pages/builds"
